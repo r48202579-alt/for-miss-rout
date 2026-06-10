@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For Miss Rout 🌙</title>
+    <!-- Google Fonts: Playfair Display (Elegant Serif), Inter (Clean Body), Caveat (Soft Handwritten Accent) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <!-- Floating Background Canvas for Stars & Dreamy Moon Particles -->
+    <canvas id="stars-canvas"></canvas>
+
+    <!-- Hidden audio element for song playlist playback -->
+    <audio id="bg-audio" loop></audio>
+
+    <!-- AUDIO PLAYER STATE INDICATOR (BOTTOM RIGHT) -->
+    <div id="audio-toast" class="toast-indicator">
+      <span id="audio-toast-msg">Playing soft keys... 🎹</span>
+    </div>
+
+    <!-- 1. PASSWORD SCREEN -->
+    <div id="password-screen" class="full-screen-overlay">
+      <div class="lock-card glassmorphism">
+        <div class="lock-decorative">
+          <div class="mini-moon-glow">🌙</div>
+        </div>
+        <h1 id="lock-question" class="serif-title">Who’s here? 🌙</h1>
+        <p id="lock-hint" class="handwritten-accent">What he calls you...</p>
+        
+        <form id="password-form" onsubmit="return false;">
+          <div class="input-glow-wrapper">
+            <input 
+              type="text" 
+              id="password-input" 
+              placeholder="Type your name..." 
+              autocomplete="off" 
+              spellcheck="false"
+              required
+            />
+          </div>
+          <button type="submit" id="password-submit-btn" class="glow-button">
+            <span>Enter Space</span>
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+        <p id="password-feedback" class="auth-feedback"></p>
+      </div>
+    </div>
+
+    <!-- MAIN COMFORT ZONE PORTAL -->
+    <main id="main-portal" class="hidden-init">
+      
+      <!-- HERO SECTIONS -->
+      <section id="hero-section" class="hero-container">
+        <!-- Floating Interactive Moon -->
+        <div class="moon-wrapper">
+          <div id="interactive-moon" class="glowing-moon" title="Tap me for a secret... 🌙">
+            <div class="moon-crater c1"></div>
+            <div class="moon-crater c2"></div>
+            <div class="moon-crater c3"></div>
+          </div>
+          <div class="moon-halo"></div>
+          <div class="moon-click-instruction handwritten-accent">tap the moon 5 times 🌙</div>
+        </div>
+
+        <div class="hero-content">
+          <div class="welcome-badge">
+            <span id="dynamic-greeting-badge">Good evening Miss Rout 🌙</span>
+          </div>
+          <h1 id="hero-title" class="serif-display font-bold">Hi Miss Rout 🌙</h1>
+          <p id="hero-message" class="hero-desc">
+            This little corner exists for the days life feels heavy,
+            for the moments you underestimate yourself,
+            and for the times you forget there’s someone quietly standing beside you.
+          </p>
+          <p id="hero-support" class="hero-support text-glow-soft">
+            “You don’t have to carry everything alone anymore.”
+          </p>
+          
+          <div class="hero-actions">
+            <button id="hero-primary-btn" class="cta-primary lavender-glow-btn wave-effect-trigger">
+              <span>Take care of me today 🤍</span>
+            </button>
+            <button id="hero-secondary-btn" class="cta-secondary scroll-to-btn">
+              <span>Make me smile 😭</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 1: OPEN WHEN... CARDS -->
+      <section id="open-when-section" class="content-section">
+        <div class="section-header">
+          <span class="section-label handwritten-accent">comfort folders</span>
+          <h2 class="serif-subtitle" id="open-when-title">Open When...</h2>
+          <p class="section-description" id="open-when-subtitle">Because sometimes words are needed the most in specific moments.</p>
+        </div>
+
+        <div id="open-when-grid" class="cards-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- SECTION 2: THINGS I LOVE ABOUT YOU -->
+      <section id="love-generator-section" class="content-section flex-section">
+        <div class="generator-container glassmorphism relative-card">
+          <div class="heart-decorative">🌻</div>
+          <h2 class="serif-subtitle" id="compliments-title">Things I Love About You</h2>
+          <p class="section-description" id="compliments-subtitle">A little drawer of reminders when you forget your magic.</p>
+          
+          <div class="compliment-display-area">
+            <div id="compliment-quote-card" class="compliment-bubble">
+              <p id="compliment-text">Click the button below to draw a reason...</p>
+            </div>
+            <div class="compliment-counter">
+              <span class="count-label">Reasons revealed:</span>
+              <span id="compliment-count" class="count-number">0</span>
+            </div>
+          </div>
+
+          <button id="get-compliment-btn" class="glow-button pulse-btn">
+            <span id="get-compliment-btn-text">Tell me something nice 🔮</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- SECTION 3: MEMORY LANE -->
+      <section id="memory-lane-section" class="content-section">
+        <div class="section-header">
+          <span class="section-label handwritten-accent">our steps and smiles</span>
+          <h2 class="serif-subtitle" id="memories-title">Memory Lane</h2>
+          <p class="section-description" id="memories-subtitle">A silent walk through our coordinates of time.</p>
+        </div>
+
+        <div class="timeline-container">
+          <!-- Timeline path line -->
+          <div class="timeline-trail"></div>
+          
+          <div id="timeline-flow" class="timeline-flow-wrapper">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
+        <div class="timeline-outro">
+          <p id="memories-ending" class="handwritten-closing">Funny how memories quietly become home. 🌙</p>
+        </div>
+      </section>
+
+      <!-- SECTION 4: SONGS THAT REMIND ME OF YOU -->
+      <section id="songs-section" class="content-section">
+        <div class="section-header">
+          <span class="section-label handwritten-accent">soundtrack of us</span>
+          <h2 class="serif-subtitle" id="songs-title">Songs That Remind Me of You 🎧</h2>
+          <p class="section-description" id="songs-subtitle">A custom soundtrack for your mind, selected with love.</p>
+          <p class="music-pills-info text-xs opacity-80" id="songs-instruction">Click on any track row below to view why it reminds me of you.</p>
+        </div>
+
+        <div id="songs-list-container" class="songs-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- SECTION 5: EMERGENCY SMILE CABINET -->
+      <section id="emergency-smile-section" class="content-section">
+        <div class="smile-cabinet-container glassmorphism-warm text-center">
+          <div class="smile-badge">🌻</div>
+          <h2 class="serif-subtitle" id="smile-title">Emergency Smile Cabinet 😭💊</h2>
+          <p class="section-description" id="smile-subtitle">Thoda pareshaan ho? Mood kharab hai? Apna precise mood select karo aur sukoon paao!</p>
+          
+          <!-- Mood Selection Pill Tags -->
+          <div class="mood-selectors-container">
+            <button class="mood-pill-btn active-pill" data-category="overthinking" id="pill-overthinking">
+              <span class="pill-emoji">🧠</span> Overthinking
+            </button>
+            <button class="mood-pill-btn" data-category="angry" id="pill-angry">
+              <span class="pill-emoji">😡</span> Angry Bean
+            </button>
+            <button class="mood-pill-btn" data-category="tired" id="pill-tired">
+              <span class="pill-emoji">🥱</span> Tired / Low
+            </button>
+            <button class="mood-pill-btn" data-category="missing" id="pill-missing">
+              <span class="pill-emoji">🥺</span> Missing Him
+            </button>
+          </div>
+
+          <!-- Interactive Taped Post-it Note Display -->
+          <div class="love-postit-container">
+            <div class="postit-sticky-tape"></div>
+            <div class="love-postit-content">
+              <p id="smile-msg-display" class="smile-msg-text">“Dhyan se suno: Tumhara dimaag bohot saari ajeeb kahaniyan bana raha hai jo bilkul jhoot hain! Breathe in, breathe out... Tum bohot pyaari ho aur sab ek dum perfect chal raha hai. Mai hoon na yahan! 🤍”</p>
+            </div>
+            <div class="postit-stamp">Pure Love 🧸</div>
+          </div>
+
+          <!-- Action Button for random quotes and particle blast -->
+          <button id="emergency-smile-btn" class="glow-button-warm">
+            <span id="emergency-smile-btn-text">Hansaao Mujhe Aur 😭✨</span>
+          </button>
+
+          <!-- Interactive Stat Indicator -->
+          <div class="smile-stats-bar">
+            <span>💖 Mode: Automated Comfort Active</span>
+            <span class="stats-separator">•</span>
+            <span id="smile-counter-val">Healed count: 0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: PERSONAL JOURNAL -->
+      <section id="journal-section" class="content-section">
+        <div class="section-header">
+          <span class="section-label handwritten-accent">safe reflection</span>
+          <h2 class="serif-subtitle" id="journal-title">Personal Comfort Journal 🌙</h2>
+          <p class="section-description" id="journal-subtitle">A silent, cozy space for your daily whispers. No server, no judgments—only saved locally on your own browser.</p>
+        </div>
+
+        <div class="journal-wrapper glassmorphism">
+          <div class="journal-input-column">
+            <h3 class="serif-title journal-block-title">Pour Your Heart Out...</h3>
+            <div class="textarea-container">
+              <textarea id="journal-textarea" placeholder="How was your day? Write down any thoughts, heavy worries, or sweet highlights here..."></textarea>
+            </div>
+            <div class="journal-actions-row">
+              <span class="char-count-badge" id="journal-char-count-label">Characters: <span id="char-count">0</span></span>
+              <button id="save-note-btn" class="glow-button-warm">
+                <span id="save-note-btn-text">Save my thoughts 🤍</span>
+              </button>
+            </div>
+          </div>
+          <div class="journal-divider-line"></div>
+          <div class="journal-log-column">
+            <h3 class="serif-title journal-block-title">Saved Whispers</h3>
+            <div id="journal-entries-container" class="journal-entries-scroll">
+              <!-- Dynamically populated past thoughts -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: REELS & COMFORT VIDEOS -->
+      <section id="reels-gallery-section" class="content-section">
+        <div class="section-header">
+          <span class="section-label handwritten-accent">digital polaroids</span>
+          <h2 class="serif-subtitle" id="reels-gallery-title">Our Comfort Reels & Videos 🎬</h2>
+          <p class="section-description" id="reels-gallery-subtitle">Humare sabse relatable aur pyaare Instagram reels ka ek cozy collection, aur aapke liye apna personal video archive!</p>
+        </div>
+
+        <!-- 6 CURATED REELS GRID -->
+        <div class="reels-grid animate-fade-in" id="curated-reels-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- PRIVATE COMFORT ARCHIVE PORTAL (Save / Share) -->
+        <div class="reels-archive-wrapper glassmorphism">
+          <div class="archive-input-side">
+            <h3 class="serif-title archive-side-title">Add / Share a Comfort Video 🍿</h3>
+            
+            <div class="input-group">
+              <label for="archive-video-url" class="input-group-label">Video Link (Instagram Reel, YouTube, etc.)</label>
+              <input type="text" id="archive-video-url" placeholder="Paste any video link here..." class="archive-custom-input">
+            </div>
+
+            <div class="input-group mt-4">
+              <label for="archive-video-note" class="input-group-label">A sweet caption, memory or note</label>
+              <input type="text" id="archive-video-note" placeholder="Write a sweet note about this video..." class="archive-custom-input">
+            </div>
+
+            <div class="archive-action-buttons mt-6">
+              <button id="save-video-btn" class="glow-button-warm">
+                <span id="save-video-btn-text">Save to Archive 💾</span>
+              </button>
+              <button id="send-video-btn" class="send-comfort-btn">
+                <span id="send-video-btn-text">Send to him ✉️</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="archive-divider-line"></div>
+
+          <div class="archive-list-side">
+            <h3 class="serif-title archive-side-title">Saved Archives 🎞️</h3>
+            <div id="custom-videos-container" class="custom-videos-scroll">
+              <!-- Dynamically populated custom videos list -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: FUTURE US -->
+      <section id="future-us-section" class="content-section">
+        <div class="future-grid-wrapper glassmorphism">
+          <div class="future-title-column">
+            <span class="section-label handwritten-accent">blueprints of tomorrow</span>
+            <h2 class="serif-subtitle" id="future-title">Future Us 🌙</h2>
+            <p class="section-description" id="future-subtitle">A small index of the beautiful things waiting for us in time.</p>
+            <div class="future-deco-moon">☁️🌙✨</div>
+          </div>
+          
+          <div class="future-checklist-column">
+            <div id="future-list-container" class="checklist-box">
+              <!-- Populated dynamically via JS -->
+            </div>
+            <div class="checklist-footer">
+              <p id="future-ending-quote" class="handwritten-accent">I’m looking forward to moments we haven’t even lived yet.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="app-footer">
+        <p class="footer-note">A quiet moonlit corner designed with love.</p>
+        <p class="footer-time">For Miss Rout • Forever 🌙</p>
+      </footer>
+    </main>
+
+    <!-- GENERAL DIALOG MODAL (For Card expansion) -->
+    <div id="info-modal" class="modal-overlay">
+      <div class="modal-window glassmorphism">
+        <button id="modal-close-btn" class="modal-close" aria-label="Close modal">×</button>
+        <div class="modal-head">
+          <span class="modal-glow-deco">🌙</span>
+          <h3 id="modal-heading-text" class="serif-title">Card Title</h3>
+        </div>
+        <div id="modal-body-content" class="modal-body">
+          <!-- Injected via script -->
+        </div>
+        <div class="modal-footer">
+          <button id="modal-dismiss-btn" class="cta-secondary">Close 🤍</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECRET EASTER EGG OVERLAY -->
+    <div id="secret-moon-modal" class="modal-overlay secret-overlay-backdrop">
+      <div class="secret-card glassmorphism-moon-dust">
+        <button id="secret-close-btn" class="modal-close" aria-label="Close secret">×</button>
+        <div class="floating-stars-mini">✨</div>
+        <div id="secret-modal-content">
+          <!-- Injected from config -->
+        </div>
+        <button id="secret-dismiss-btn" class="glow-button-warm mt-6">
+          <span>Keep this close to your heart 🫂</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Javascript bindings -->
+    <script src="/content.js"></script>
+    <script src="/script.js"></script>
+  </body>
+</html>

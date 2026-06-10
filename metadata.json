@@ -1,0 +1,6 @@
+{
+  "name": "For Miss Rout",
+  "description": "A cozy, moonlit romantic comfort website filled with beautiful memories, songs, compliments, and warm notes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
