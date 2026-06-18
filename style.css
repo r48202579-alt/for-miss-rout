@@ -2071,6 +2071,271 @@ textarea#journal-textarea:focus {
   background: rgba(30, 27, 46, 0.2);
 }
 
+/* ==========================================================================
+   SHARED CABINET & FILE CHEST
+   ========================================================================== */
+.shared-cabinet-wrapper {
+  display: flex;
+  flex-direction: row;
+  min-height: 480px;
+  gap: 3.5rem;
+  padding: 3rem;
+  margin-top: 2rem;
+  background: rgba(22, 20, 34, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(184, 164, 227, 0.12);
+  border-radius: 28px;
+  box-shadow: var(--shadow-ambient);
+  align-items: stretch;
+}
+
+.cabinet-upload-side, .cabinet-list-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cabinet-side-title {
+  font-size: 1.4rem;
+  color: var(--color-warm-beige);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Drag and drop zone */
+.file-tpl-dropzone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed rgba(184, 164, 227, 0.25);
+  border-radius: 20px;
+  padding: 2.5rem;
+  background: rgba(14, 12, 23, 0.2);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  min-height: 250px;
+}
+
+.file-tpl-dropzone:hover {
+  border-color: #ff9fb2;
+  background: rgba(255, 159, 178, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 159, 178, 0.08);
+}
+
+.file-tpl-dropzone.dragover {
+  border-color: #f7d6c8;
+  background: rgba(247, 214, 200, 0.08);
+  transform: scale(0.99);
+}
+
+.dropzone-inner-glow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dropzone-icon {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 0 12px rgba(184, 164, 227, 0.4));
+  margin-bottom: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.file-tpl-dropzone:hover .dropzone-icon {
+  transform: translateY(-5px) scale(1.05);
+}
+
+.dropzone-main-text {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--color-warm-beige);
+}
+
+.dropzone-sub-text {
+  font-size: 0.85rem;
+  color: var(--color-warm-grey);
+}
+
+.dropzone-browse {
+  color: var(--color-primary-lavender);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* Upload progress indicators */
+.upload-progress-box {
+  background: rgba(30, 27, 46, 0.5);
+  border: 1px solid rgba(184, 164, 227, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.uploading-name {
+  color: var(--color-warm-beige);
+  max-width: 70%;
+  font-family: var(--font-mono);
+}
+
+.upload-pct-label {
+  color: #ff9fb2;
+  font-weight: 600;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff9fb2, #f7d6c8);
+  border-radius: 10px;
+  transition: width 0.1s ease;
+}
+
+/* Files scroll container */
+.cabinet-files-list {
+  flex: 1;
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-right: 0.5rem;
+}
+
+/* Shared media card styles */
+.shared-file-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  border-radius: 18px;
+  background: rgba(30, 27, 46, 0.25);
+  border: 1px solid rgba(184, 164, 227, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shared-file-card:hover {
+  background: rgba(36, 32, 54, 0.4);
+  border-color: rgba(255, 159, 178, 0.2);
+  transform: translateX(4px);
+}
+
+.file-info-col {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 75%;
+}
+
+.file-type-badge {
+  font-size: 1.75rem;
+  width: 48px;
+  height: 48px;
+  background: rgba(184, 164, 227, 0.08);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.file-title {
+  font-size: 0.95rem;
+  color: var(--color-warm-beige);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-subtext {
+  font-size: 0.75rem;
+  color: var(--color-warm-grey);
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-btn-col {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.file-action-btn {
+  background: rgba(184, 164, 227, 0.1);
+  border: 1px solid rgba(184, 164, 227, 0.15);
+  color: var(--color-primary-lavender);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.file-action-btn:hover {
+  background: #ff9fb2;
+  border-color: #ff9fb2;
+  color: #1e1b2e;
+  transform: scale(1.05);
+}
+
+.file-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-warm-grey);
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.file-delete-btn:hover {
+  background: rgba(255, 159, 178, 0.12);
+  color: #ff9fb2;
+  transform: scale(1.1) rotate(9deg);
+}
+
 /* Laptop / iPad Pro - Desktop (1024px and up) */
 @media (min-width: 1024px) {
   /* Keep standard columns setup */
@@ -2099,6 +2364,12 @@ textarea#journal-textarea:focus {
     gap: 1.5rem;
   }
   .reels-archive-wrapper {
+    flex-direction: column;
+    padding: 2.5rem 2rem;
+    gap: 2.5rem;
+    min-height: auto;
+  }
+  .shared-cabinet-wrapper {
     flex-direction: column;
     padding: 2.5rem 2rem;
     gap: 2.5rem;
@@ -2181,6 +2452,10 @@ textarea#journal-textarea:focus {
     gap: 1.25rem;
   }
   .reels-archive-wrapper {
+    padding: 2rem 1.25rem;
+    gap: 2rem;
+  }
+  .shared-cabinet-wrapper {
     padding: 2rem 1.25rem;
     gap: 2rem;
   }

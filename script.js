@@ -290,39 +290,37 @@ const initializeApp = () => {
     }, 800);
   };
 
-  // Multiple Fallback Unlock Elements
+  // Multiple Fallback Interaction Elements (Providing focus & feedback instead of bypasses!)
   if (lockQuestion) {
-    lockQuestion.style.cursor = "pointer";
     lockQuestion.addEventListener("click", () => {
-      console.log("Portal opened via lock-question tap.");
-      performUnlock();
+      if (pswdInput) pswdInput.focus();
     });
   }
   if (lockHint) {
     lockHint.style.cursor = "pointer";
     lockHint.addEventListener("click", () => {
-      console.log("Portal opened via lock-hint tap.");
-      performUnlock();
+      if (pswdFeedback) {
+        pswdFeedback.textContent = "Hint: Type what he calls you... 🤍";
+        pswdFeedback.classList.add("show");
+      }
     });
   }
   const miniMoonGlow = document.querySelector(".mini-moon-glow");
   if (miniMoonGlow) {
     miniMoonGlow.style.cursor = "pointer";
     miniMoonGlow.addEventListener("click", () => {
-      console.log("Portal opened via mini-moon-glow tap.");
-      performUnlock();
+      if (pswdInput) pswdInput.focus();
     });
   }
   const lockDecorative = document.querySelector(".lock-decorative");
   if (lockDecorative) {
     lockDecorative.style.cursor = "pointer";
     lockDecorative.addEventListener("click", () => {
-      console.log("Portal opened via lock-decorative tap.");
-      performUnlock();
+      if (pswdInput) pswdInput.focus();
     });
   }
 
-  // Handle submit key binding safely
+  // Handle submit key binding safely (strictly requiring a valid password)
   if (pswdForm) {
     pswdForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -330,20 +328,20 @@ const initializeApp = () => {
       const typed = (typedRaw || "").trim().toLowerCase();
       const correct = (config.security.correctPassword || "miss rout").trim().toLowerCase();
 
-      // Standardize matches
-      const simplifiedTyped = typed.replace(/[\s\-_]/g, "");
-      const simplifiedCorrect = correct.replace(/[\s\-_]/g, "");
+      // Normalize string (remove all whitespace and punctuation)
+      const simplify = (str) => str.replace(/[^a-z0-9]/g, "");
+      
+      const simplifiedTyped = simplify(typed);
+      const simplifiedCorrect = simplify(correct);
 
-      // Accept absolutely anything close or 2+ chars
+      // Main security match terms corresponding to what he calls her
       const isMatched = (
-        typed === correct || 
         simplifiedTyped === simplifiedCorrect || 
-        typed.includes("rout") || 
-        typed.includes("miss") || 
-        typed.includes("love") || 
-        typed.includes("priya") ||
-        typed.length >= 2 ||
-        passwordAttempts >= 2
+        simplifiedTyped === "missrout" || 
+        simplifiedTyped === "rout" || 
+        simplifiedTyped === "priya" || 
+        simplifiedTyped === "love" ||
+        simplifiedTyped === "miss"
       );
 
       if (isMatched) {
@@ -352,7 +350,7 @@ const initializeApp = () => {
         passwordAttempts++;
         
         if (pswdFeedback) {
-          pswdFeedback.textContent = "Unlocking the romantic space for you anyway... Welcome Miss Rout 🌙";
+          pswdFeedback.textContent = config.security.errorFeedback || "Hmm... that doesn't sound right 🌙";
           pswdFeedback.classList.add("show");
         }
         
@@ -364,11 +362,6 @@ const initializeApp = () => {
             card.style.animation = "shake 0.4s ease-in-out";
           }, 5);
         }
-
-        // Automatically unlock after 1.2 seconds anyway so they are never stranded
-        setTimeout(() => {
-          performUnlock();
-        }, 1200);
       }
     });
   }
@@ -838,10 +831,49 @@ const initializeApp = () => {
   }
 
   // -------------------------------------------------------------
-  // PERSONAL COMFORT JOURNAL CONTROLLER ENGINE
+  // REAL-TIME SERVER SYNC & REST API CORE
   // -------------------------------------------------------------
-  const STORAGE_KEY = "comfort_journal_notes";
+  async function apiGet(endpoint) {
+    try {
+      const res = await fetch(endpoint);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.error(`apiGet failed for ${endpoint}:`, err);
+      return null;
+    }
+  }
 
+  async function apiPost(endpoint, body) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.error(`apiPost failed for ${endpoint}:`, err);
+      return null;
+    }
+  }
+
+  async function apiDelete(endpoint) {
+    try {
+      const res = await fetch(endpoint, { method: "DELETE" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.error(`apiDelete failed for ${endpoint}:`, err);
+      return null;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // PERSONAL COMFORT JOURNAL CONTROLLER ENGINE (SERVER-SYNCED)
+  // -------------------------------------------------------------
+  
   // Real-time character counting with cozy visual update
   if (journalTextarea) {
     journalTextarea.addEventListener("input", () => {
@@ -850,22 +882,10 @@ const initializeApp = () => {
     });
   }
 
-  // Load history from localStorage
-  function fetchJournalEntries() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error("Failed to parse journal storage: ", e);
-      return [];
-    }
-  }
-
-  // Render past journal entries cleanly
-  function renderJournalEntries() {
+  // Render past journal entries cleanly (synced with both devices)
+  async function renderJournalEntries() {
     if (!journalEntriesContainer) return;
-    const entries = fetchJournalEntries();
+    const entries = await apiGet("/api/journal") || [];
     journalEntriesContainer.innerHTML = "";
 
     if (entries.length === 0) {
@@ -903,8 +923,8 @@ const initializeApp = () => {
     });
   }
 
-  // Save thought function
-  function saveJournalEntry() {
+  // Save thought function (synced server-side)
+  async function saveJournalEntry() {
     if (!journalTextarea) return;
     const rawText = journalTextarea.value;
     const text = rawText.trim();
@@ -925,46 +945,39 @@ const initializeApp = () => {
     const formattedTime = `${dateStr} • ${hours}:${minutes} ${ampm}`;
 
     const newEntry = {
-      id: "entry_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-      timestamp: Date.now(),
-      formattedTime: formattedTime,
-      content: rawText // Save actual content with paragraph spacing!
+      content: rawText,
+      formattedTime: formattedTime
     };
 
-    const entries = fetchJournalEntries();
-    entries.unshift(newEntry); // Prepend to show latest first!
+    const updated = await apiPost("/api/journal", newEntry);
+    if (updated) {
+      // Clear textarea & reset count
+      journalTextarea.value = "";
+      if (charCount) charCount.textContent = "0";
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    
-    // Clear textarea & reset count
-    journalTextarea.value = "";
-    if (charCount) charCount.textContent = "0";
-
-    // Re-render & alert
-    renderJournalEntries();
-    showToastNotification(config.journal?.entrySavedToast || "Your thought is safe in your journal. 🤍");
+      // Re-render & alert
+      renderJournalEntries();
+      showToastNotification(config.journal?.entrySavedToast || "Your thought is safe in your journal. 🤍");
+    } else {
+      showToastNotification("Failed to reach server. Please check connection. ⚠️");
+    }
   }
 
   // Delete matching thought entry
-  function deleteJournalEntry(id) {
-    let entries = fetchJournalEntries();
-    entries = entries.filter(item => item.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-
-    // Animate item exit before complete re-render for pristine user experience
+  async function deleteJournalEntry(id) {
     const targetCard = document.getElementById(`journal-entry-${id}`);
     if (targetCard) {
       targetCard.style.opacity = "0";
       targetCard.style.transform = "scale(0.9) translateY(-10px)";
       targetCard.style.transition = "all 0.3s ease";
-      setTimeout(() => {
-        renderJournalEntries();
-      }, 300);
-    } else {
-      renderJournalEntries();
     }
 
-    showToastNotification(config.journal?.entryDeletedToast || "Thought gently released to the moon...");
+    const updated = await apiDelete(`/api/journal/${id}`);
+    setTimeout(() => {
+      renderJournalEntries();
+    }, 300);
+
+    showToastNotification(config.journal?.entryDeletedToast || "Thought gently released into orbit...");
   }
 
   // Add click listener to save button
@@ -1030,24 +1043,10 @@ const initializeApp = () => {
     });
   }
 
-  const CARDS_STORAGE_KEY = "comfort_saved_videos";
-
-  // Function to load saved custom videos
-  function fetchSavedVideos() {
-    const raw = localStorage.getItem(CARDS_STORAGE_KEY);
-    if (!raw) return [];
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error("Failed to parse saved videos: ", e);
-      return [];
-    }
-  }
-
-  // Render saved custom videos
-  function renderSavedVideos() {
+  // Function to load saved custom videos dynamically
+  async function renderSavedVideos() {
     if (!customVideosContainer) return;
-    const items = fetchSavedVideos();
+    const items = await apiGet("/api/videos") || [];
     customVideosContainer.innerHTML = "";
 
     if (items.length === 0) {
@@ -1087,7 +1086,7 @@ const initializeApp = () => {
   }
 
   // Save new custom video
-  function saveCustomVideo() {
+  async function saveCustomVideo() {
     if (!archiveVideoUrlInput) return;
     const url = archiveVideoUrlInput.value.trim();
     const note = archiveVideoNoteInput ? archiveVideoNoteInput.value.trim() : "";
@@ -1111,47 +1110,44 @@ const initializeApp = () => {
     const friendlyTime = `${date.toLocaleDateString("en-US", { month: "short", day: "numeric" })} • ${date.getHours() ? date.getHours() : 12}:${String(date.getMinutes()).padStart(2, '0')}`;
 
     const newVideo = {
-      id: "vid_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
       url: url,
       note: note || "Humara ek aur comfort moment.",
       title: domainLabel,
       friendlyTime: friendlyTime
     };
 
-    const videos = fetchSavedVideos();
-    videos.unshift(newVideo);
-    localStorage.setItem(CARDS_STORAGE_KEY, JSON.stringify(videos));
+    const updated = await apiPost("/api/videos", newVideo);
+    if (updated) {
+      // Clear input
+      archiveVideoUrlInput.value = "";
+      if (archiveVideoNoteInput) archiveVideoNoteInput.value = "";
 
-    // Clear input
-    archiveVideoUrlInput.value = "";
-    if (archiveVideoNoteInput) archiveVideoNoteInput.value = "";
-
-    // Re-render
-    renderSavedVideos();
-    showToastNotification("Your comfort video has been added to our offline library! 💾✨");
+      // Re-render
+      renderSavedVideos();
+      showToastNotification("Comfort video has been saved and shared instantly! 💾✨");
+    } else {
+      showToastNotification("Could not save to shared database. ⚠️");
+    }
   }
 
   // Delete saved video
-  function deleteSavedVideo(id) {
-    let videos = fetchSavedVideos();
-    videos = videos.filter(v => v.id !== id);
-    localStorage.setItem(CARDS_STORAGE_KEY, JSON.stringify(videos));
-
+  async function deleteSavedVideo(id) {
     const targetCard = document.getElementById(`saved-video-${id}`);
     if (targetCard) {
       targetCard.style.opacity = "0";
       targetCard.style.transform = "scale(0.9) translateY(-10px)";
       targetCard.style.transition = "all 0.3s ease";
-      setTimeout(() => {
-        renderSavedVideos();
-      }, 300);
-    } else {
-      renderSavedVideos();
     }
-    showToastNotification("Comfort video removed cleanly.");
+
+    const updated = await apiDelete(`/api/videos/${id}`);
+    setTimeout(() => {
+      renderSavedVideos();
+    }, 300);
+
+    showToastNotification("Comfort video released cleanly.");
   }
 
-  // Send video option (Opens WhatsApp / Email prompt with lovely prefilled message of link + note!)
+  // Send video option (Opens WhatsApp / Email prompt)
   function sendComfortVideoToHim() {
     if (!archiveVideoUrlInput) return;
     const url = archiveVideoUrlInput.value.trim();
@@ -1162,11 +1158,9 @@ const initializeApp = () => {
       return;
     }
 
-    // Let's create a WhatsApp link pre-filled template message
     const draftMessage = `Hey! I found this beautiful comfort video and wanted to share it with you 🤍:\n\n🔗 Link: ${url}\n\n📝 Note: "${note || "Relatable!"}"`;
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(draftMessage)}`;
     
-    // Open in a new tab safely
     window.open(whatsappUrl, "_blank");
     showToastNotification("Redirecting you to message him this reel... 🤍🌸");
   }
@@ -1177,6 +1171,220 @@ const initializeApp = () => {
 
   // Initialize custom videos listing
   renderSavedVideos();
+
+  // -------------------------------------------------------------
+  // SHARED CABINET & MEDIA FILE UPLOADER ENGINE (SERVER-SYNCED)
+  // -------------------------------------------------------------
+  const fileDropZone = safeGet("file-drop-zone");
+  const cabinetFileInput = safeGet("cabinet-file-input");
+  const uploadProgressContainer = safeGet("upload-progress-container");
+  const uploadingFileName = safeGet("uploading-file-name");
+  const uploadingPercentage = safeGet("uploading-percentage");
+  const uploadProgressBar = safeGet("upload-progress-bar");
+  const cabinetFilesContainer = safeGet("cabinet-files-container");
+
+  // Helper: format standard human readable file size
+  function formatBytes(bytes) {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  }
+
+  // Render cabinet media cards
+  async function renderCabinetFiles() {
+    if (!cabinetFilesContainer) return;
+    const files = await apiGet("/api/files") || [];
+    cabinetFilesContainer.innerHTML = "";
+
+    if (files.length === 0) {
+      const emptyEl = document.createElement("div");
+      emptyEl.className = "archive-empty-msg";
+      emptyEl.innerHTML = `
+        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🌌</span>
+        The shared cabinet is empty. Drop surprise photos, lovable video drafts or documents here!
+      `;
+      cabinetFilesContainer.appendChild(emptyEl);
+      return;
+    }
+
+    files.forEach(file => {
+      const card = document.createElement("div");
+      card.className = "shared-file-card";
+      card.id = `file-card-${file.id}`;
+
+      // Pick corresponding cute icons & media templates based on contentType
+      let typeIcon = "📄";
+      let isImage = false;
+      let isVideo = false;
+      let isAudio = false;
+
+      if (file.contentType.startsWith("image/")) {
+        typeIcon = "🖼️";
+        isImage = true;
+      } else if (file.contentType.startsWith("video/")) {
+        typeIcon = "🎥";
+        isVideo = true;
+      } else if (file.contentType.startsWith("audio/")) {
+        typeIcon = "🎵";
+        isAudio = true;
+      }
+
+      // Format upload timestamp elegantly
+      const d = new Date(file.uploadedAt);
+      const friendlyDateStr = `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })} • ${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, "0")} ${d.getHours() >= 12 ? "PM" : "AM"}`;
+
+      let mediaPreviewHtml = "";
+      if (isImage) {
+        mediaPreviewHtml = `
+          <div style="margin-top: 0.75rem; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,159,178,0.1);">
+            <img src="/uploads/${file.filename}" referrerpolicy="no-referrer" style="width: 100%; height: auto; max-height: 180px; object-fit: cover; display: block;" alt="${file.originalName}">
+          </div>
+        `;
+      } else if (isVideo) {
+        mediaPreviewHtml = `
+          <div style="margin-top: 0.75rem; width: 100%; border-radius: 12px; overflow: hidden; background: #0c0a15; border: 1px solid rgba(184,164,227,0.1);">
+            <video src="/uploads/${file.filename}" controls style="width: 100%; height: auto; max-height: 200px; display: block;"></video>
+          </div>
+        `;
+      } else if (isAudio) {
+        mediaPreviewHtml = `
+          <div style="margin-top: 0.75rem; width: 100%;">
+            <audio src="/uploads/${file.filename}" controls style="width: 100%; height: 40px;"></audio>
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="file-info-col" style="flex-direction: column; align-items: flex-start; max-width: 82%;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="file-type-badge" style="width: 36px; height: 36px; font-size: 1.25rem;">${typeIcon}</div>
+            <div class="file-metadata">
+              <span class="file-title" title="${file.originalName}">${file.originalName}</span>
+              <span class="file-subtext">${formatBytes(file.size)} • ${friendlyDateStr}</span>
+            </div>
+          </div>
+          ${mediaPreviewHtml}
+        </div>
+        <div class="file-btn-col">
+          <a href="/uploads/${file.filename}" download="${file.originalName}" target="_blank" class="file-action-btn" title="Download file">
+            📥 Save
+          </a>
+          <button class="file-delete-btn" data-id="${file.id}">×</button>
+        </div>
+      `;
+
+      // Deletion trigger in cabinet
+      card.querySelector(".file-delete-btn").addEventListener("click", () => {
+        deleteCabinetFile(file.id);
+      });
+
+      cabinetFilesContainer.appendChild(card);
+    });
+  }
+
+  // Delete uploaded file
+  async function deleteCabinetFile(id) {
+    const cardEl = document.getElementById(`file-card-${id}`);
+    if (cardEl) {
+      cardEl.style.opacity = "0";
+      cardEl.style.transform = "scale(0.9) translateY(10px)";
+      cardEl.style.transition = "all 0.3s ease";
+    }
+
+    const updated = await apiDelete(`/api/files/${id}`);
+    setTimeout(() => {
+      renderCabinetFiles();
+    }, 300);
+
+    showToastNotification("Treasure safely released from the shared cabinet.");
+  }
+
+  // Upload file via native binary XHR to allow precise progress bar updates
+  function uploadCabinetFile(file) {
+    if (!file) return;
+
+    if (uploadingFileName) uploadingFileName.textContent = file.name;
+    if (uploadingPercentage) uploadingPercentage.textContent = "0%";
+    if (uploadProgressBar) uploadProgressBar.style.width = "0%";
+    if (uploadProgressContainer) uploadProgressContainer.style.display = "block";
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/upload-file", true);
+    
+    xhr.setRequestHeader("X-Filename", file.name);
+    // Explicitly prevent standard form wrapping bottlenecks
+    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+
+    // Capture standard incremental upload stages
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const percentage = Math.round((e.loaded / e.total) * 100);
+        if (uploadingPercentage) uploadingPercentage.textContent = `${percentage}%`;
+        if (uploadProgressBar) uploadProgressBar.style.width = `${percentage}%`;
+      }
+    };
+
+    xhr.onload = () => {
+      // Complete resetting
+      setTimeout(() => {
+        if (uploadProgressContainer) uploadProgressContainer.style.display = "none";
+      }, 500);
+
+      if (xhr.status >= 200 && xhr.status < 300) {
+        renderCabinetFiles();
+        showToastNotification("Awesome! Uploaded as a synced treasure! ☁️🎁");
+      } else {
+        showToastNotification("File upload encountered error! ⚠️");
+      }
+    };
+
+    xhr.onerror = () => {
+      if (uploadProgressContainer) uploadProgressContainer.style.display = "none";
+      showToastNotification("Upload connection failed. Check file size limits! ⚠️");
+    };
+
+    // Ship raw binary stream directly
+    xhr.send(file);
+  }
+
+  // Set up event listeners for Drag & Drop files & browse
+  if (fileDropZone) {
+    fileDropZone.addEventListener("click", () => {
+      if (cabinetFileInput) cabinetFileInput.click();
+    });
+
+    cabinetFileInput.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        uploadCabinetFile(e.target.files[0]);
+      }
+    });
+
+    fileDropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      fileDropZone.classList.add("dragover");
+    });
+
+    fileDropZone.addEventListener("dragleave", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      fileDropZone.classList.remove("dragover");
+    });
+
+    fileDropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      fileDropZone.classList.remove("dragover");
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        uploadCabinetFile(e.dataTransfer.files[0]);
+      }
+    });
+  }
+
+  // Initialize shared file cabinet on boot
+  renderCabinetFiles();
 
   // -------------------------------------------------------------
   // SECRET EASTER EGG (TAP THE GLOWING MOON 5 TIMES)

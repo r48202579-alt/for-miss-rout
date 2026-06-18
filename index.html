@@ -293,6 +293,53 @@
         </div>
       </section>
 
+      <!-- SECTION: SHARED CABINET & FILES -->
+      <section id="shared-cabinet-section" class="content-section">
+        <div class="section-header">
+          <span class="section-label handwritten-accent">locked chest</span>
+          <h2 class="serif-subtitle" id="shared-cabinet-title">Our Shared Cabinet & Files ☁️</h2>
+          <p class="section-description" id="shared-cabinet-subtitle">Upload genuine photos, cozy video clips, sweet voice drafts, or surprise letters for each other. Stored securely and synced in real-time!</p>
+        </div>
+
+        <div class="shared-cabinet-wrapper glassmorphism">
+          <!-- UPLOAD SIDE -->
+          <div class="cabinet-upload-side">
+            <h3 class="serif-title cabinet-side-title">Drop a Gift Into the Chest 🎁</h3>
+            
+            <!-- Drag & Drop container -->
+            <div id="file-drop-zone" class="file-tpl-dropzone">
+              <div class="dropzone-inner-glow">
+                <span class="dropzone-icon">☁️</span>
+                <p class="dropzone-main-text">Drag & drop any file or video here</p>
+                <p class="dropzone-sub-text">or <span class="dropzone-browse">browse computer</span></p>
+                <input type="file" id="cabinet-file-input" style="display: none;">
+              </div>
+            </div>
+
+            <!-- Upload progress bar container -->
+            <div id="upload-progress-container" class="upload-progress-box" style="display: none;">
+              <div class="progress-info">
+                <span id="uploading-file-name" class="uploading-name truncate">file.mp4</span>
+                <span id="uploading-percentage" class="upload-pct-label">0%</span>
+              </div>
+              <div class="progress-bar-track">
+                <div id="upload-progress-bar" class="progress-bar-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="archive-divider-line"></div>
+
+          <!-- LISTING SIDE -->
+          <div class="cabinet-list-side">
+            <h3 class="serif-title cabinet-side-title">Cabinet Treasures 🗝️</h3>
+            <div id="cabinet-files-container" class="cabinet-files-list scrollbar-custom">
+              <!-- Dynamically populated files and videos -->
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- SECTION 6: FUTURE US -->
       <section id="future-us-section" class="content-section">
         <div class="future-grid-wrapper glassmorphism">

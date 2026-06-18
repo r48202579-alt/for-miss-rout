@@ -322,17 +322,17 @@ const APP_CONTENT = {
         label: "Angry Bean 😡",
         desc: "Gussa naak pe hai",
         messages: [
-          "Suno gussewaley tamatar! 🍅 Respectfully, itna cutely gussa hona bilkul gair-kanooni hai. Jaldi se gussa thanda karo warna mai video call karke dher saari virtual forehead kisses de dunga! 😭",
-          "Aww, sorry na! Ab gussa thanda bhi kar do please? Dekho, mai kaan pakad ke aur aankhein bade karke ek dum shareef baccha ban ke khada hoon aur tumhari pyari si smile ka wait kar rahi hoon. 🥺🧸",
-          "Pehle khud bohot gussa karti ho, fir dabe lafzo me dimaand karti ho 'mujhe manaao'. Toh lo, mai haazir hoon! Gussa chodo, ek pyaari smile do aur chalo hum gappe ladate hain! 🤍"
+          "Suno gussewaley tamatar! 🍅 Respectfully, itna cutely gussa hona bilkul gair-kanooni hai. Jaldi se gussa thanda karo aur ek pyaari si smile de do! 🤍",
+          "Aww, sorry na! Ab gussa thanda bhi kar do please? Dekho, mai kaan pakad ke aur aankhein bade karke ek dum shareef aur suljha hua baccha ban ke khada hoon aur tumhari pyari si smile ka wait kar raha hoon. 🥺🧸",
+          "Pehle khud bohot gussa karti ho, fir dabe lafzo me demand karti ho 'mujhe manaao'. Toh lo, mai haazir hoon! Gussa chodo, ek pyaari smile do aur chalo hum dher saari baatein karte hain! 🤍"
         ]
       },
       tired: {
         label: "Tired / Low 🥱",
         desc: "Exhausted din",
         messages: [
-          "Aww, thak gayi ho kya humari lazy cat? 🥱 Jaldi se phone side me rakho, cozy blanket me jao aur aankhein band karo. Mai sapno me bhi tumhara dhyan rakhne aur sir dabane aa raha hoon! 🌙",
-          "Sending you a huge virtual hug right now! 🤗 99% warm comfort successfully delivered in real-time. 1% bachi hui forehead kiss jab hum milenge tab direct physical delivery milegi!",
+          "Aww, thak gayi ho kya? 🥱 Jaldi se phone thoda side me rakho, cozy blanket me jao aur aankhein band karo. Aapne aaj bohot mehnat ki hai, so please thoda rest kar lo! 🌙",
+          "Sending you a huge virtual hug right now! 🤗 100% warm comfort and strength successfully delivered in real-time. Power through or just rest—aap hamesha humari favorite ho!",
           "Ek cup garam meethi adrak wali chai ☕ aur dher saara sukoon... tumhare is sweet-exhausted dimaag ke liye. Ek dum befikar hokar deep breath lo, tum sab bohot acche se handle kar rhi ho. Proud of you!"
         ]
       },
